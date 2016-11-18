@@ -1,27 +1,31 @@
 #include <iostream>
+#include <limits>
 
 #include "lfu.hpp"
 
 using namespace std;
 
+void purge(){
+	cin.clear();
+	cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
+}
+
 int main(){
 	string answer;
 	int size;
-	bool cacheExist = false;
-	
-	cout << "Enter size:\n>:";
-	cin >> size;
-
-	auto lfu = new LfuCache(size);
-	bool exist = true;
+	bool exist = false;
+	LfuCache *lfu;
 
 	while(true){
 		cout << ">:";
 		cin >> answer;
 
 		if(answer == "help"){
-			cout << "help" << endl;
-
+			cout << "\tkey <key>\tCreates <key> or increases <key> value in the cache\n" << endl;
+			cout << "\tlist\t\tPrints up the cache\n" << endl;
+			cout << "\tcreate <size>\tCreates the cache\n" << endl;
+			cout << "\tdelete\t\tDeletes the cache\n" << endl;
+			cout << "\texit\t\tExit program\n" << endl;
 		}else if(answer.substr(0, 4) == "exit"){
 			return 0;
 
@@ -29,10 +33,14 @@ int main(){
 			if(exist){
 				cout << "LFU Cache already exist." << endl;
 			}else{
-				cin >> size;
-				lfu = new LfuCache(size);
-				exist = true;
-				cout << "Created." << endl;
+				if(!(cin >> size) || size < 1){
+					cout << "Incorrect value! It must be number greater than 0." << endl;
+					purge();
+				}else{
+					lfu = new LfuCache(size);
+					exist = true;
+					cout << "Created." << endl;
+				}
 			}
 
 		}else if(answer.substr(0, 3) == "key"){
@@ -41,6 +49,7 @@ int main(){
 				lfu->find_and_add(answer);
 			}else{
 				cout << "LFU Cache doesn't exist." << endl;
+				purge();
 			}
 
 		}else if(answer.substr(0, 4) == "list"){
@@ -48,6 +57,7 @@ int main(){
 				cout << *lfu << endl;
 			}else{
 				cout << "LFU Cache doesn't exist." << endl;
+				purge();
 			}
 
 		}else if(answer.substr(0, 6) == "delete"){
@@ -58,18 +68,13 @@ int main(){
 				cout << "Deleted." << endl;
 			}else{
 				cout << "LFU Cache doesn't exist." << endl;
-			}
-
-		}else if(answer.substr(0, 4) == "find"){
-			if(exist){
-				cin >> answer;
-				cout << (*lfu)(answer) << endl;
-			}else{
-				cout << "LFU Cache doesn't exist." << endl;
+				purge();
 			}
 
 		}else{
 			cout << "Unknown command.\nType 'help' to see awailable commands." << endl;
+			purge();
 		}
+
 	}
 }

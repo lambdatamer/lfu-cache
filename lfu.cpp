@@ -13,23 +13,30 @@ LfuCache::LfuCache(const size_t _size){
 
 bool LfuCache::find_and_add(const string &_address){
 	auto finded = cache.find(_address);
-	
 	if(finded == cache.end()){
-		// if(cache.size() == size){
-		// 	cache.erase(*nav.begin());
-		// 	nav.erase(nav.begin());
-		// }
-		// cache.insert(pair<string, int>(_address, 1));
-		// nav.insert(cache.find(_address));
+		if(cache.size() >= size){
+			cache.erase(nav.begin()->second);
+			nav.erase(nav.begin());
+		}
+		cache.insert(pair<string, int>(_address, 1));
+		nav.insert(pair<int, string>(1, _address));
+
+		return false;
 	}else{
-		// cache.at(_address)++;	
-		// nav.erase(finded);
-		// nav.insert(finded);
+		navPop(_address);
+		cache.at(_address)++;
+		nav.insert(pair<int, string>(cache.at(_address), _address));
+
+		return true;
 	}
 }
 
-int LfuCache::operator()(string &_str){
-	return cache.at(_str);
+void LfuCache::navPop(string _value){
+	for(auto i = nav.begin(); i != nav.end(); i++){
+		if(i->second == _value){
+			nav.erase(i);
+		}
+	}
 }
 
 ostream& operator<<(ostream &_out, LfuCache &_lfumap){
@@ -37,9 +44,9 @@ ostream& operator<<(ostream &_out, LfuCache &_lfumap){
 	for(auto elem : _lfumap.cache){
 		cout << elem.first << " : " << elem.second << endl;
 	}
-	cout << "Set:" << endl;
+	cout << "Nav:" << endl;
 	for(auto elem : _lfumap.nav){
-		cout << elem->first << " : " << elem->second << endl;
-	} 
+		cout << elem.first << " : " << elem.second << endl;
+	}
 	return _out;
 }

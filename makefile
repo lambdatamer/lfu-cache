@@ -3,7 +3,8 @@ CFLAGS=-c -std=c++11
 LDFLAGS=
 SOURCES=$(wildcard *.cpp)
 OBJECTS=$(SOURCES:.cpp=.o)
-EXECUTABLE=fano
+EXECUTABLE=lfu
+
 all: $(SOURCES) $(EXECUTABLE)
 	rm -rf *.o
 	
